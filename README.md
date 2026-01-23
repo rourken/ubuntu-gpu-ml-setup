@@ -1,6 +1,6 @@
 # Ubuntu GPU Machine Learning Setup
 
-This repository provides a step-by-step guide to setting up a development environment for computer vision and large language models (LLMs) on **Ubuntu 24.04.2 LTS** with **NVIDIA GPU** support.
+This repository provides a step-by-step guide to setting up a development environment for computer vision and large language models (LLMs) on **Ubuntu 24.04.3 LTS** with **NVIDIA GPU** support.
 
 It includes the installation of NVIDIA drivers, CUDA 12.6, OpenBLAS, cuBLAS, NumPy, SciPy, FilterPy, OpenCV, FFmpeg, PyTorch, llama-cpp-python, and additional libraries in a Python virtual environment.
 
@@ -10,15 +10,15 @@ It includes the installation of NVIDIA drivers, CUDA 12.6, OpenBLAS, cuBLAS, Num
 
 - Installs **CUDA 12.6** and NVIDIA drivers for GPU acceleration.
 - Configures **OpenBLAS** and **cuBLAS** for optimized numerical computations.
-- Builds **OpenCV 4.11.0** and **FFmpeg 6.1.2** with CUDA support.
+- Builds **OpenCV 4.12.0** and **FFmpeg 7.1.2** with CUDA support.
 - Installs **PyTorch** and **llama-cpp-python** with GPU acceleration.
-- Uses a **Python virtual environment** for isolated package management.
+- Uses **uv** for lightning-fast Python package installation and virtual environment management (instead of standard pip).
 
 ---
 
 ## 🖥️ Prerequisites
 
-- **OS**: Ubuntu 24.04.2 LTS  
+- **OS**: Ubuntu 24.04.3 LTS  
 - **GPU**: NVIDIA GPU (e.g., RTX 3000 with CUDA Compute Capability 8.6)  
 - **Disk Space**: At least 50 GB free  
 - **RAM**: 16 GB or more recommended  
@@ -44,7 +44,7 @@ Follow the detailed instructions in [INSTALL.md](INSTALL.md):
 4. After installation, activate the virtual environment:
 
 ```bash
-source ~/cv_venv/bin/activate
+source ~/venv/bin/activate
 ```
 
 ---
@@ -57,6 +57,9 @@ nvidia-smi
 
 # Check CUDA installation
 nvcc --version
+
+# Check uv installation (Package Manager)
+uv --version
 
 # Verify NumPy
 python3 -c "import numpy as np; np.show_config()"
@@ -80,7 +83,7 @@ python3 -c "import llama_cpp; print('llama-cpp-python installed')"
 ---
 
 ## 📌 Notes
-- NumPy (1.26.4), SciPy (1.11.4), and FilterPy (1.4.5) are installed via pip due to compatibility with Python 3.12.3.
+- NumPy (1.26.4), SciPy (1.11.4), and FilterPy (1.4.5) are installed via uv for high-speed installation and compatibility with Python 3.12.3.
 
 - OpenCV and FFmpeg are built from source to enable CUDA support.
 
@@ -106,7 +109,7 @@ python3 -c "import llama_cpp; print('llama-cpp-python installed')"
   Recreate the virtual environment:
 
 ``` bash
-rm -rf ~/cv_venv
+rm -rf ~/venv
 # Then rerun the setup steps
 ```
 - Build failures (e.g., OpenCV):
