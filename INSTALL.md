@@ -280,8 +280,9 @@ cd FFmpeg
     --enable-cuda-nvcc \
     --enable-cuvid \
     --enable-nvenc \
-    --extra-cflags="-I/usr/local/cuda-12.6/include -I/usr/local/include" \
-    --extra-ldflags="-L/usr/local/cuda-12.6/lib64 -L/usr/local/lib"
+    --nvccflags="-gencode arch=compute_${ARCH},code=sm_${ARCH} -O2" \
+    --extra-cflags="-I/usr/local/cuda/include -I/usr/local/include" \
+    --extra-ldflags="-L/usr/local/cuda/lib64 -L/usr/local/lib"
 make -j$(nproc)
 sudo make install
 sudo ldconfig
