@@ -365,7 +365,6 @@ cmake -S .. -B . \
     -D ENABLE_FAST_MATH=ON \
     -D CUDA_FAST_MATH=ON \
     -D WITH_CUBLAS=ON \
-    # CMake finds Blas bindings via exported environment variables above
     -D WITH_TBB=ON \
     -D WITH_V4L=ON \
     -D WITH_QT=OFF \
@@ -374,7 +373,7 @@ cmake -S .. -B . \
     -D BUILD_EXAMPLES=OFF \
     -D BUILD_TESTS=OFF \
     -D BUILD_PERF_TESTS=OFF \
-    -D WITH_GSTREAMER=OFF \
+    -D WITH_GSTREAMER=ON \
     -D OPENCV_GENERATE_PKGCONFIG=ON \
     -D INSTALL_PYTHON_EXAMPLES=OFF \
     -D INSTALL_C_EXAMPLES=OFF \
