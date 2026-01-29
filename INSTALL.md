@@ -19,8 +19,8 @@ Set architecture specific variables
 86 = Nvidia RTX 3000 series (Ampere), excluding RTX 3050
 
 ```bash
-export ARCH=$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader)
-export VIRTUAL_ENV=$HOME/venv
+    export ARCH=$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader | tr -d '.')
+    export VIRTUAL_ENV=$HOME/.venv
 
 ```
 
@@ -138,10 +138,13 @@ Configure environment variables for CUDA.
 
 ```bash
 
-echo 'export CUDA_HOME=/usr/local/cuda-12.6' >> ~/.bashrc
-echo 'export CUDA_TOOLKIT_ROOT_DIR=$CUDA_HOME' >> ~/.bashrc
-echo 'export PATH=$CUDA_HOME/bin${PATH:+:${PATH}}' >> ~/.bashrc
-echo 'export LD_LIBRARY_PATH=$CUDA_HOME/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> ~/.bashrc
+if ! grep -q "CUDA_HOME=/usr/local/cuda-12.6" ~/.bashrc; then
+    echo 'export CUDA_HOME=/usr/local/cuda-12.6' >> ~/.bashrc
+    echo 'export CUDA_TOOLKIT_ROOT_DIR=$CUDA_HOME' >> ~/.bashrc
+    echo 'export PATH=$CUDA_HOME/bin${PATH:+:${PATH}}' >> ~/.bashrc
+    echo 'export LD_LIBRARY_PATH=$CUDA_HOME/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> ~/.bashrc
+fi
+
 source ~/.bashrc
 sudo ldconfig
 ```
@@ -295,6 +298,7 @@ cd $HOME/soft
 git clone --depth 1 --branch n7.1.2 https://github.com/FFmpeg/FFmpeg.git
 cd FFmpeg
 # export PATH=/usr/local/cuda-12.6/bin:$HOME/bin:$PATH
+
 ./configure \
     --prefix=/usr/local \
     --enable-shared \
@@ -314,6 +318,7 @@ cd FFmpeg
     --enable-cuda-nvcc \
     --enable-cuvid \
     --enable-nvenc \
+    --enable-libnpp \
     --nvccflags="-gencode arch=compute_${ARCH},code=sm_${ARCH} -O2" \
     --extra-cflags="-I/usr/local/cuda/include -I/usr/local/include" \
     --extra-ldflags="-L/usr/local/cuda/lib64 -L/usr/local/lib"
@@ -355,7 +360,7 @@ PYTHON_SITE_PACKAGES=$(python3 -c "import sysconfig; print(sysconfig.get_path('p
 
 cmake -S .. -B . \
     -D CMAKE_BUILD_TYPE=RELEASE \
-    -D CMAKE_INSTALL_PREFIX=$VIRTUAL_ENV \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
     -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
     -D WITH_FFMPEG=ON \
     -D WITH_CUDA=ON \
@@ -385,14 +390,13 @@ cmake -S .. -B . \
     -D BUILD_opencv_python2=OFF \
     ..
 make -j$(nproc)
-# Install without sudo (writing to $HOME/.venv)
-make install
-
+sudo make install
+sudo ldconfig
 cd $HOME/soft
 
 echo "=== Check OpenCV Installation ===" && \
-    uv run python -c "import cv2; print(f'OpenCV Version: {cv2.__version__}')" && \
-    echo "OpenCV installed successfully"
+  uv run python -c "import sys, cv2; print(f'OpenCV Version: {cv2.__version__}'); print(f'Python: {sys.executable}'); print(f'OpenCV Params: {cv2.getBuildInformation()}')" && \
+  echo "OpenCV installed successfully"
 ```
 
 ---
